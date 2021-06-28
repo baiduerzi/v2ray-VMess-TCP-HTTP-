@@ -1,3 +1,113 @@
 https://v2raytech.com/get-proxy-info/
 
 订阅# sub://aHR0cHM6Ly9kcml2ZS5nb29nbGUuY29tL3VjP2V4cG9ydD1kb3dubG9hZCZpZD0xcktnaFF2R2w2ZkZhNE1CREtmd0I1Ym1XSVJOM2xiZng
+
+
+SSR混淆及混淆协议参数的设置
+2018-04-04 | 搞软件：SSR混淆参数用法 | 1.1k 字 |  4 分钟
+文章目录
+1. 前言
+2. ShadowsocksR混淆的选择
+3. 混淆的实际应用
+4. 混淆参数
+4.1. http_simple
+4.2. tls1.2_ticket_auth
+4.3. 混淆常用host
+4.3.1. 国外域名混淆
+4.3.2. 国内域名混淆
+5. 参考文档
+前言
+
+最初破娃酱设计混淆的时候只是想着伪装为看起来像正常的流量，减少被注意到的可能性而已，但实际上流量混淆衍生出了不少的黑科技用法。
+
+ShadowsocksR混淆的选择
+
+首先是混淆参数的问题。
+这个混淆参数可根据你的设定，伪装为对任意host的访问，但破娃酱不建议填写此参数，但建议服务端节点带有域名及正确的解析，这样不需要填写参数，客户端将直接使用节点的域名作为参数。
+
+为什么应该这样做呢？
+因为运营商已经在少数地区布置了DNS验证系统『有可能是故意针对SSR』，如果发出的 http/tls 请求里的域名解析出的IP地址列表，与所连接的实际IP不一致，多次请求后就可能会把此IP加入临时黑名单。所以，如果节点有域名，那么参数不写其实是最好的，很多人都习惯写一个大公司网站的域名，其实这反而留下了一个可被检测的地方。
+
+混淆的实际应用
+
+虽然破娃酱不建议加参数，但各地区情况不一样，大部分情况下加了参数速度更快，用的更长久，其应用主要包括以下几类：
+
+遇到运营商QoS，使用混淆能提速
+所在网络有严格限制，仅能使用 80 或 443 端口，不认识的协议根本不能用的（如学校、公司、政府办公网络）
+对自己的隐私有要求的，希望在运营商的连接记录里留下看起来正常的访问记录
+试图绕过学校或运营商的计费系统，即免流『该部分应用较普遍，配合抓包大法可以爽歪歪』
+第五类其它黑科技用途保密
+软件和协议	运营商检测到的类型	显示地址
+Shadowsocks	TCP 业务	显示服务器 IP
+SS + http_simple（80端口）	上网（Web 方式 get）	显示混淆域名
+SSR	TCP 业务	显示服务器 IP
+SSR + http_simple	上网（Web 方式 get）	显示混淆域名
+SSR + TLS（443）	安全类网页浏览（HTTPS VPN）流量 HTTPS 链接	显示混淆域名
+SSR + TLS（非443）	网络连接（网页）HTTPS 链接	显示混淆域名
+IPSec VPN	UDP 业务	显示服务器 IP
+V2Ray	TCP 业务	显示服务器 IP
+V2Ray + TLS	HTTPS 网络连接	显示证书域名
+nghttpx + TLS	HTTPS 网络连接	显示证书域名
+kcptun	UDP 业务	显示服务器 IP
+混淆参数
+
+http_simple
+
+1
+xinhuaapp-img.img.aliyuncs.com#User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 10_2_1 like Mac OS X) AppleWebKit/602.4.6 (KHTML, like Gecko) Version/10.0 Mobile/14D27 MicroMessenger/6.5.13\nAccept: /\nConnection: keep-alive
+混淆含义：审查方将看到你正用iOS 10.2.1的微信内置浏览器，在浏览某个来自国内某『和谐的』新闻客户端的多媒体内容，且该内容已CDN到国外
+
+1
+mmbiz.qpic.cn#User-Agent: Mozilla/5.0 (Linux; Android 5.0.1; SAMSUNG GT-I9502 Build/LRX22C) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/2.1 Chrome/34.0.1847.76 Mobile Safari/537.36\nAccept: /\nConnection: keep-alive
+混淆含义：审查方将看到你正用S4的默认浏览器在浏览微信的多媒体内容，且该内容已CDN到国外
+
+tls1.2_ticket_auth
+
+这个协议对应的参数就简单了，填自己希望伪装的网址，如：
+
+1
+www.icloud.com,img.alicdn.com,apps.bdimg.com
+多个域名之间用英文 , 区隔，客户端会随机选择一个进行混淆伪装。
+
+混淆常用host
+
+国外域名混淆
+
+因为节点均为非大陆ip，所以合理性来说用国外混淆才是最好的伪装
+
+1
+2
+3
+4
+5
+6
+7
+8
+tse1.mm.bing.net
+cloudfront.com
+cloudflare.com
+itunes.apple.com
+www.icloud.com
+ajax.microsoft.com
+apps.bdimg.com
+www.bing.com
+国内域名混淆
+
+平常访问以下站点那个多就用那个，或定期更换
+
+1
+2
+3
+4
+5
+6
+7
+8
+static.youku.com  #优酷
+static.hdslb.com  #B站
+item.taobao.com #淘宝
+m.10010.com #联通
+uac.10010.com #联通
+wap.10086.cn  #移动
+dl.music.189.cn #电信
+cdn.4g.play.cn  #电信
